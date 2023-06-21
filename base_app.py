@@ -34,8 +34,11 @@ import plotly.graph_objects as go
 import plotly.express as px
 import nltk
 
+
 from wordcloud import WordCloud
 pd.set_option('display.max_colwidth', 100)
+
+st.set_page_config(page_title="SynapseAI Tweet Classifer", page_icon=":cloud:")
 
 # Vectorizer
 news_vectorizer = open("resources/tfidfvect.pkl","rb")
@@ -47,7 +50,7 @@ df = pd.read_csv("resources/train_preprocessed.csv")
 # The main function where we will build the actual app
 def main():
 	"""Tweet Classifier App with Streamlit """
-
+	
 	# Creates a main title and subheader on your page -
 	# these are static across all pages
 	st.title("SynapseAI Tweet Classifer")
