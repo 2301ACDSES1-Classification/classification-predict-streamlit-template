@@ -1,7 +1,6 @@
 joblib
 matplotlib
 nltk
-os
 pandas
 plotly
 plotly-express
