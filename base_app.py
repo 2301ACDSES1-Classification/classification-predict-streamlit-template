@@ -83,12 +83,12 @@ def main():
 		tweet_text = st.text_input("Tweet", value="Enter your text here")
 
 		# Load models from .pkl files
-		lr = joblib.load(open(os.path.join("resources/log_reg_model_3.pkl"),"rb"))
-		svm = joblib.load(open(os.path.join("resources/svm_model_2.pkl"),"rb"))
-		#rf = joblib.load(open(os.path.join("resources/RF.pkl"),"rb"))
+		lr = joblib.load(open(os.path.join("resources/log_reg_model.pkl"),"rb"))
+		svm = joblib.load(open(os.path.join("resources/svm_model.pkl"),"rb"))
+		cnb = joblib.load(open(os.path.join("resources/complement_nb_model.pkl"),"rb"))
 		#xgb = joblib.load(open(os.path.join("resources/XGB.pkl"),"rb"))
 
-		model_list = [lr, svm]
+		model_list = [lr, svm, cnb]
 
 		model = st.selectbox('Select Model', options=model_list)
 
