@@ -33,7 +33,8 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 import nltk
-
+import scipy
+from scipy import sparse
 nltk.download('punkt')
 
 st.set_page_config(page_title="SynapseAI Tweet Classifer", page_icon=":cloud:", layout="wide")
