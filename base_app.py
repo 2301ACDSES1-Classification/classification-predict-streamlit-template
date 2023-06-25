@@ -34,6 +34,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 import nltk
 
+nltk.download('punkt')
+
 st.set_page_config(page_title="SynapseAI Tweet Classifer", page_icon=":cloud:", layout="wide")
 
 from wordcloud import WordCloud
