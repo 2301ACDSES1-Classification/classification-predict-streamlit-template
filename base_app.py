@@ -84,11 +84,11 @@ def main():
 
 		# Load models from .pkl files
 		lr = joblib.load(open(os.path.join("resources/log_reg_model.pkl"),"rb"))
-		#svm = joblib.load(open(os.path.join("resources/svm_model.pkl"),"rb"))
+		svm = joblib.load(open(os.path.join("resources/svm_model.pkl"),"rb"))
 		cnb = joblib.load(open(os.path.join("resources/complement_nb_model.pkl"),"rb"))
 		#xgb = joblib.load(open(os.path.join("resources/XGB.pkl"),"rb"))
 
-		model_list = [lr, cnb]
+		model_list = [cnb, lr, svm]
 
 		model = st.selectbox('Select Model', options=model_list)
 
