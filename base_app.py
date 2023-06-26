@@ -36,11 +36,35 @@ import nltk
 import scipy
 from scipy import sparse
 nltk.download('punkt')
+from wordcloud import WordCloud
+pd.set_option('display.max_colwidth', 100)
 
 st.set_page_config(page_title="SynapseAI Tweet Classifer", page_icon=":cloud:", layout="wide")
 
-from wordcloud import WordCloud
-pd.set_option('display.max_colwidth', 100)
+bg_img = """
+<style>
+[data-testid="stAppViewContainer"] {
+background-image: url('https://images.unsplash.com/photo-1605778336817-121ba9819b96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1282&q=80');
+background-size: cover;
+background-position: top left;
+}
+
+[data-testid="stHeader"] {
+background-color: rgba(0, 0, 0, 0);
+}
+
+[data-testid="stToolbar"] {
+right: 2rem;
+}
+
+[data-testid="stSidebar"] {
+background-image: url('https://images.unsplash.com/photo-1610270197941-925ce9015c40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80');
+background-size: center;
+background-position: center;
+}
+</style>
+"""
+st.markdown(bg_img, unsafe_allow_html=True)
 
 # Vectorizer
 news_vectorizer = open("resources/count_vectorizer.pkl","rb")
@@ -55,7 +79,7 @@ def main():
 
 	# Creates a main title and subheader on your page -
 	# these are static across all pages
-	st.title("SynapseAI Tweet Classifer")
+	st.title(":green[SynapseAI] Tweet Classifer")
 	st.subheader("Climate change tweet classification")
 
 	# Creating sidebar with selection box -
@@ -67,7 +91,14 @@ def main():
 	if selection == "Information":
 		st.info("General Information")
 		# You can read a markdown file from supporting resources folder
-		st.markdown("Our ML model for sentiment analysis of climate change-related tweets combines the power of natural language processing and machine learning techniques to provide a comprehensive understanding of public sentiments. By leveraging this model, we can extract meaningful insights from the vast pool of Twitter data, enabling a data-driven approach towards addressing climate change and fostering informed decision-making.")
+		st.markdown("""Welcome to SynapseAI, a cutting-edge AI company revolutionizing industries worldwide.
+		Our team of experts leverages advanced algorithms, machine learning, and natural language processing
+		to deliver innovative solutions. From personalized virtual assistants to data analytics and automation,
+		we empower businesses to thrive in the digital era. Join us on this transformative journey.
+		Our ML model for sentiment analysis of climate change-related tweets combines the power of natural
+		language processing and machine learning techniques to provide a comprehensive understanding of public
+		sentiments. By leveraging this model, we can extract meaningful insights from the vast pool of Twitter
+		data, enabling a data-driven approach towards addressing climate change and fostering informed decision-making.""")
 
 		st.subheader("Raw Twitter data and label")
 		if st.checkbox('Show raw data'): # data is hidden if box is unchecked
@@ -84,11 +115,11 @@ def main():
 
 		# Load models from .pkl files
 		lr = joblib.load(open(os.path.join("resources/log_reg_model.pkl"),"rb"))
-		svm = joblib.load(open(os.path.join("resources/svm_model.pkl"),"rb"))
+		#mlp = joblib.load(open(os.path.join("resources/mlp_model.pkl"),"rb"))
 		cnb = joblib.load(open(os.path.join("resources/complement_nb_model.pkl"),"rb"))
 		#xgb = joblib.load(open(os.path.join("resources/XGB.pkl"),"rb"))
 
-		model_list = [cnb, lr, svm]
+		model_list = [cnb, lr]
 
 		model = st.selectbox('Select Model', options=model_list)
 
@@ -198,11 +229,11 @@ def main():
 
 	# Building the Credits page
 	if selection == "Credits":
-		st.info('About Us')
-		st.subheader('SynapseAI')
-		st.text("""Welcome to SynapseAI, a cutting-edge AI company revolutionizing industries worldwide.\nOur team of experts leverages advanced algorithms, machine learning,and natural language processing\nto deliver innovative solutions. From personalized virtual assistants to data analytics and automation,\nwe empower businesses to thrive in the digital era. Join us on this transformative journey.""")
+		st.info('Credits')
 		st.subheader('Our Team')
 		st.text("""Ajirioghene Oguh\t\tProject Lead\n\nAdeyemo Abdulmalik\t\tTechnical Lead\n\nVirtue-ann Michael\t\tAdmin Lead\n\nAbeeb Adeola Adeshina\t\tMember\n\nMutiso Stephen\t\t\tMember\n\nFolarin Adekemi\t\t\tMember""")
+		st.subheader('Images')
+		st.text("""Background Image\t\tChristian Lue (unsplash.com)\n\nSidebar Image\t\t\tJohn Cameron (unsplash.com)""")
 
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
