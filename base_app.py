@@ -33,9 +33,7 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 import nltk
-import pickle
-import scipy
-from scipy import sparse
+
 nltk.download('punkt')
 from wordcloud import WordCloud
 pd.set_option('display.max_colwidth', 100)
@@ -116,11 +114,12 @@ def main():
 
 		# Load models from .pkl files
 		lr = joblib.load(open(os.path.join("resources/log_reg_model.pkl"),"rb"))
-		#mlp = joblib.load(open(os.path.join("resources/mlp_model.pkl"),"rb"))
-		cnb = joblib.load(open(os.path.join("resources/complement_nb_model.pkl"),"rb"))
-		ridge = pickle.load(open(os.path.join("resources/ridge_model.pkl"),"rb"))
+		mnb = joblib.load(open(os.path.join("resources/multinomial_nb_model_1.pkl"),"rb"))
+		cnb = joblib.load(open(os.path.join("resources/complement_nb_model_2.pkl"),"rb"))
+		ridge = joblib.load(open(os.path.join("resources/ridge_model.pkl"),"rb"))
+		sc = joblib.load(open(os.path.join("resources\stackingNB_model_1.pkl"),"rb"))
 
-		model_list = [cnb, lr, ridge]
+		model_list = [lr, cnb, mnb, ridge, sc]
 
 		model = st.selectbox('Select Model', options=model_list)
 

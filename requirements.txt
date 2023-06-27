@@ -2,10 +2,8 @@ joblib
 matplotlib
 nltk
 pandas
-pickle
 plotly
 plotly-express
 scikit-learn
-scipy
 streamlit
 wordcloud
