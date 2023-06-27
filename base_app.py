@@ -118,8 +118,9 @@ def main():
 		cnb = joblib.load(open(os.path.join("resources/complement_nb_model_2.pkl"),"rb"))
 		ridge = joblib.load(open(os.path.join("resources/ridge_model.pkl"),"rb"))
 		sc = joblib.load(open(os.path.join("resources/stackingNB_model_1.pkl"),"rb"))
+		svm = joblib.load(open(os.path.join("resources/svm_model_2.pkl"),"rb"))
 
-		model_list = [lr, cnb, mnb, ridge, sc]
+		model_list = [svm, lr, cnb, mnb, ridge, sc]
 
 		model = st.selectbox('Select Model', options=model_list)
 
