@@ -117,9 +117,9 @@ def main():
 		lr = joblib.load(open(os.path.join("resources/log_reg_model.pkl"),"rb"))
 		#mlp = joblib.load(open(os.path.join("resources/mlp_model.pkl"),"rb"))
 		cnb = joblib.load(open(os.path.join("resources/complement_nb_model.pkl"),"rb"))
-		#xgb = joblib.load(open(os.path.join("resources/XGB.pkl"),"rb"))
+		ridge = joblib.load(open(os.path.join("resources/ridge_model.pkl"),"rb"))
 
-		model_list = [cnb, lr]
+		model_list = [cnb, lr, ridge]
 
 		model = st.selectbox('Select Model', options=model_list)
 
