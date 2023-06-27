@@ -33,6 +33,7 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 import nltk
+import pickle
 import scipy
 from scipy import sparse
 nltk.download('punkt')
@@ -117,7 +118,7 @@ def main():
 		lr = joblib.load(open(os.path.join("resources/log_reg_model.pkl"),"rb"))
 		#mlp = joblib.load(open(os.path.join("resources/mlp_model.pkl"),"rb"))
 		cnb = joblib.load(open(os.path.join("resources/complement_nb_model.pkl"),"rb"))
-		ridge = joblib.load(open(os.path.join("resources/ridge_model.pkl"),"rb"))
+		ridge = pickle.load(open(os.path.join("resources/ridge_model.pkl"),"rb"))
 
 		model_list = [cnb, lr, ridge]
 
