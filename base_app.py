@@ -24,6 +24,7 @@
 # Streamlit dependencies
 import streamlit as st
 import joblib,os
+import pickle
 
 # Data dependencies
 import pandas as pd
@@ -117,7 +118,7 @@ def main():
 		mnb = joblib.load(open(os.path.join("resources/multinomial_nb_model_1.pkl"),"rb"))
 		cnb = joblib.load(open(os.path.join("resources/complement_nb_model_2.pkl"),"rb"))
 		ridge = joblib.load(open(os.path.join("resources/ridge_model.pkl"),"rb"))
-		sc = joblib.load(open(os.path.join("resources/stackingNB_model_1.pkl"),"rb"))
+		sc = pickle.load(open(os.path.join("resources/stackingNB_model_1.pkl"),"rb"))
 		
 
 		model_list = [lr, mnb, cnb, sc, ridge]
