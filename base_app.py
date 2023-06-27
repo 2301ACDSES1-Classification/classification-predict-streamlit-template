@@ -121,7 +121,7 @@ def main():
 		sc = pickle.load(open(os.path.join("resources/stackingNB_model_1.pkl"),"rb"))
 		
 
-		model_list = [lr, mnb, cnb, sc, ridge]
+		model_list = [lr, mnb, cnb, ridge, sc]
 
 		model = st.selectbox('Select Model', options=model_list)
 
