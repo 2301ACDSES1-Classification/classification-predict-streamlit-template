@@ -5,5 +5,6 @@ pandas
 plotly
 plotly-express
 scikit-learn
+sklearn
 streamlit
 wordcloud
