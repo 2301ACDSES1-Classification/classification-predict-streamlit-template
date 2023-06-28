@@ -118,10 +118,10 @@ def main():
 		mnb = joblib.load(open(os.path.join("resources/multinomial_nb_model_1.pkl"),"rb"))
 		cnb = joblib.load(open(os.path.join("resources/complement_nb_model_2.pkl"),"rb"))
 		ridge = joblib.load(open(os.path.join("resources/ridge_model.pkl"),"rb"))
-		sc = pickle.load(open(os.path.join("resources/stackingNB_model_1.pkl"),"rb"))
+		#sc = pickle.load(open(os.path.join("resources/stackingNB_model_1.pkl"),"rb"))
 		
 
-		model_list = [lr, mnb, cnb, ridge, sc]
+		model_list = [lr, mnb, cnb, ridge]
 
 		model = st.selectbox('Select Model', options=model_list)
 
