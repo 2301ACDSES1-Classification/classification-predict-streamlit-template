@@ -34,6 +34,8 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 import nltk
+from nltk import ngrams as ngrams, word_tokenize
+from collections import Counter
 
 nltk.download('punkt')
 from wordcloud import WordCloud
@@ -72,6 +74,13 @@ tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl f
 
 # Load your raw data
 df = pd.read_csv("resources/train_preprocessed.csv")
+
+def generate_ngrams_from_column(data, column_name, n):
+    tokens = []
+    for text in data[column_name]:
+        tokens.extend(word_tokenize(text))
+    n_grams = ngrams(tokens, n)
+    return [' '.join(gram) for gram in n_grams]
 
 # The main function where we will build the actual app
 def main():
@@ -147,7 +156,7 @@ def main():
 	# Building the EDA page
 	if selection == "Exploratory Data Analysis":
 		st.info("Exploratory Data Analysis")
-		st.subheader("Sentiments Analysis")
+		st.subheader("Tweet Distribution")
     	# Group tweets by sentiments
 		groups = df.groupby(by='sentiment').count().cleaned_message
 		anti = groups[-1]
@@ -156,15 +165,23 @@ def main():
 		news = groups[2]
     	# Create a bar chart
 		fig = go.Figure()
-		fig.add_trace(go.Bar(
-    	    x=['Anti', 'Neutral', 'Pro', 'News'],
-    	    y=[anti, neu, pro, news],
-    	    marker_color='indianred',
-    	    width=[0.4, 0.4],
-    	    text=[f'ANTI: {anti}', f'NEU: {neu}', f'PRO: {pro}', f'NEWS: {news}']))
-		fig.update_layout(title='Frequency of Sentiments', title_x=0.5)
-    	# Show the figure
+		fig.add_trace(go.Pie(
+    		labels=['Anti', 'Neutral', 'Pro', 'News'],
+    		values=[anti, neu, pro, news],
+    		marker_colors=['indianred', 'cyan', 'orange', 'pink'],
+    		text=[f'ANTI: {anti}', f'NEU: {neu}', f'PRO: {pro}', f'NEWS: {news}']))
+		fig.update_layout(title='Frequency of Sentiments',
+		    title_x=0.5,
+		    height=500,  # Adjust the height as desired
+    		width=700,    # Adjust the width as desired
+		    title_font=dict(size=24),  # Increase the title font size
+    		showlegend=True,
+    		legend=dict(font=dict(size=20)),  # Increase the legend font size
+    		annotations=[dict(font=dict(size=20))]  # Increase the annotation font size
+			)
+		# Show the figure
 		st.plotly_chart(fig, use_container_width=True)
+
 
 		st.subheader("Tweets Analysis")
 		# Tokenize words
@@ -178,44 +195,108 @@ def main():
     	# Create a bar plot
 		fig = px.bar(temp, x='word', y='count', title='Top words')
     	# Rotate the x-ticks vertically
-		fig.update_layout(xaxis_tickangle=90)
+		fig.update_layout(xaxis_tickangle=90,
+		    title_font=dict(size=24),  # Increase the title font size
+    		annotations=[dict(font=dict(size=20))]  # Increase the annotation font size
+		)
     	# Show the plot
 		st.plotly_chart(fig, use_container_width=True)
 
-		st.subheader("Wordcloud of the Tweets")
+		st.subheader("ngrams analysis")
+		selected_ngram = st.selectbox("Select n-gram", ["Bigram", "Trigram"])
+		column_name = 'cleaned_message'
+		if selected_ngram == "Bigram":
+			n = 2
+		else:
+			n = 3
+		ngram_list = generate_ngrams_from_column(df, column_name, n)
+		ngram_counter = Counter(ngram_list)
+		most_common_ngrams = ngram_counter.most_common(15)  # Get the 15 most common n-grams
+		most_common_ngrams.sort(key=lambda x: x[1], reverse=True)  # Sort by frequency in descending order
+		labels, values = zip(*most_common_ngrams)
+		data = pd.DataFrame({"N-gram": labels, "Frequency": values})
+		
+		# Create bar chart using Plotly
+		fig = go.Figure(data=[go.Bar(x=labels, y=values)])
+		fig.update_layout(
+            xaxis_title=f"{selected_ngram}s",
+            yaxis_title="Frequency",
+            title=f"Top 15 Most Common {selected_ngram}s",
+	    	title_font=dict(size=24),  # Increase the title font size
+    		annotations=[dict(font=dict(size=20))]  # Increase the annotation font size
+        )
+		st.plotly_chart(fig)
+
+		st.subheader("Wordclouds")
 		# Start with one review:
 		df_anti = df[df['sentiment']==-1]
 		df_neutral = df[df['sentiment']==0]
 		df_pro = df[df['sentiment']==1]
 		df_news = df[df['sentiment']==2]
-		tweet_All = " ".join(review for review in df.cleaned_message)
-		tweet_anti = " ".join(review for review in df_anti.cleaned_message)
-		tweet_neutral = " ".join(review for review in df_neutral.cleaned_message)
-		tweet_pro = " ".join(review for review in df_pro.cleaned_message)
-		tweet_news = " ".join(review for review in df_news.cleaned_message)
 		
-		fig, ax = plt.subplots(5, 1, figsize  = (800/30, 600/30), dpi=30)
+		# Flatten to lists
+		tweet_all = df['cleaned_message'].tolist()
+		tweet_anti = df_anti['cleaned_message'].tolist()
+		tweet_neutral = df_neutral['cleaned_message'].tolist()
+		tweet_pro = df_pro['cleaned_message'].tolist()
+		tweet_news = df_news['cleaned_message'].tolist()
+
+		# Join list to a single string
+		tweet_all = ' '.join(tweet_all)
+		tweet_anti = ' '.join(tweet_anti)
+		tweet_pro = ' '.join(tweet_pro)
+		tweet_neu = ' '.join(tweet_neutral)
+		tweet_news = ' '.join(tweet_news)
+
+		# Exclude the top 5 most occurring words
+		excluded_words = set([word for word, _ in frequency_dist.most_common(4)])
+
+		# Split lists to words
+		tweet_all = tweet_all.split()
+		tweet_anti = tweet_anti.split()
+		tweet_neu = tweet_neu.split()
+		tweet_news = tweet_news.split()
+		tweet_pro = tweet_pro.split()
+
+		# Filter out the excluded words from the original list
+		tweet_all = [word for word in tweet_all]
+		filtered_news = [word for word in tweet_news if word not in excluded_words]
+		filtered_pro = [word for word in tweet_pro if word not in excluded_words]
+		filtered_anti = [word for word in tweet_anti if word not in excluded_words]
+		filtered_neu = [word for word in tweet_neu if word not in excluded_words]
+
+		# Convert the filtered words back into a single string
+		tweet_all = ' '.join(tweet_all)
+		filtered_news = ' '.join(filtered_news)
+		filtered_pro = ' '.join(filtered_pro)
+		filtered_anti = ' '.join(filtered_anti)
+		filtered_neu = ' '.join(filtered_neu)
+
+		wordcloud = WordCloud(width=400, height=200, max_font_size=50, max_words=100, background_color="white")
+
+		fig, ax = plt.subplots(5, 1, figsize  = (25, 12), dpi=30)
     	# Create and generate a word cloud image:
-		wordcloud_ALL = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(tweet_All)
-		wordcloud_anti = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(tweet_anti)
-		wordcloud_neutral = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(tweet_neutral)
-		wordcloud_pro = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(tweet_pro)
-		wordcloud_news = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(tweet_news)
+		wordcloud_all = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(tweet_all)
+		wordcloud_anti = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(filtered_anti)
+		wordcloud_neutral = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(filtered_neu)
+		wordcloud_pro = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(filtered_pro)
+		wordcloud_news = WordCloud(width=400, height=300, max_font_size=50, max_words=100, background_color="white").generate(filtered_news)
+
 		# Display the generated image:
-		ax[0].imshow(wordcloud_ALL, interpolation='bilinear')
-		ax[0].set_title('All Tweets', fontsize=20)
+		ax[0].imshow(wordcloud_all, interpolation='bilinear')
+		ax[0].set_title('All Tweets', fontsize=15)
 		ax[0].axis('off')
-		ax[1].imshow(wordcloud_anti, interpolation='bilinear')
-		ax[1].set_title('Tweets under ANTI Class',fontsize=20)
+		ax[1].imshow(wordcloud_news, interpolation='bilinear')
+		ax[1].set_title('News Tweets',fontsize=15)
 		ax[1].axis('off')
-		ax[2].imshow(wordcloud_neutral, interpolation='bilinear')
-		ax[2].set_title('Tweets under NEUTRAL Class',fontsize=20)
+		ax[2].imshow(wordcloud_pro, interpolation='bilinear')
+		ax[2].set_title('Pro Tweets',fontsize=15)
 		ax[2].axis('off')
-		ax[3].imshow(wordcloud_pro, interpolation='bilinear')
-		ax[3].set_title('Tweets under PRO Class',fontsize=20)
+		ax[3].imshow(wordcloud_anti, interpolation='bilinear')
+		ax[3].set_title('Anti Tweets',fontsize=15)
 		ax[3].axis('off')
-		ax[4].imshow(wordcloud_news, interpolation='bilinear')
-		ax[4].set_title('Tweets under NEWS Class',fontsize=20)
+		ax[4].imshow(wordcloud_neutral, interpolation='bilinear')
+		ax[4].set_title('Neutral Tweets',fontsize=15)
 		ax[4].axis('off')
 		# Show the plot
 		st.pyplot(fig)
